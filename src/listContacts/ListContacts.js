@@ -17,15 +17,22 @@ class ListContacts extends Component {
     this.setState({ query: query.trim() })
   }
 
+  clearQuery = () => {
+    this.setState({ query: ''})
+  }
 render() {
+  const { contacts, onDeleteContact } = this.props;
+  const { query } = this.state;
+
+
   // Buscando pela letra inicial no input do contato
 
   let showingContacts 
-  if (this.state.query) {
-    const match = new RegExp(escapeRegExp(this.state.query), 'i')
-    showingContacts = this.props.contacts.filter((contact) => match.test(contact.name))
+  if (query) {
+    const match = new RegExp(escapeRegExp(query), 'i')
+    showingContacts = contacts.filter((contact) => match.test(contact.name))
   } else {
-    showingContacts = this.props.contacts
+    showingContacts = contacts
   }
 
   // Organizando o array para buscar pela ordem do alfabeto o nome ( abc )
@@ -40,22 +47,29 @@ render() {
           type="text" 
           className="serch-contacts"
           placeholder="Buscar o seu contato"
-          value={this.state.query}
+          value={query}
           onChange={(event) => this.handleUpdateQuery(event.target.value)}
         />
       </div>
 
+      {showingContacts.length !== contacts.length && (
+        <div className="showing-contacts">
+          <span>Now showing {showingContacts.length } of {contacts.length} </span>
+          <button onClick={this.clearQuery}>Mostra tudo</button>
+        </div>
+      )}
+
+
       <ol className="contact-list">
         {showingContacts.map((contact) => (
           <li key={contact.id} className="contact-list-item">
-            <div className='contact-avatar'>
-            </div>
+            <div className='contact-avatar' style={{backgroundImage: `url(${contacts.avatarURL})`}} />
             <div className="contact-details">
               <p>{contact.name}</p>
               <p>{contact.email}</p>
             </div>
             <button onClick={() => 
-              this.props.onDeleteContact(contact)} 
+              onDeleteContact(contact)} 
               className="contact-remove"
               >
               Remove
